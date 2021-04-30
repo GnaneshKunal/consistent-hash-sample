@@ -1,0 +1,41 @@
+use std::collections::hash_map::DefaultHasher;
+use std::collections::HashMap;
+use std::hash::{Hash, Hasher};
+
+mod bisect;
+
+use bisect::Bisect;
+
+pub fn calculate_hash<T: Hash>(t: &T) -> u64 {
+    let mut s = DefaultHasher::new();
+    t.hash(&mut s);
+    s.finish()
+}
+
+#[derive(Clone, Debug)]
+struct Conn(pub u16, pub redis::Client);
+
+impl Hash for Conn {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.0.hash(state);
+    }
+}
+
+// struct ConsistentHash {
+//     servers:
+// }
+
+fn main() -> Result<(), redis::RedisError> {
+    let _client1 = redis::Client::open("redis://127.0.0.1/")?;
+    let _client2 = redis::Client::open("redis://127.0.0.1:6379/")?;
+
+    let mut b = Bisect(vec![0, 5, 9]);
+
+    b.append(8);
+
+    println!("{:?}", b);
+
+    let v: Vec<u8> = vec![];
+
+    Ok(())
+}
